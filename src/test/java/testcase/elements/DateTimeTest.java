@@ -1,18 +1,23 @@
 package testcase.elements;
 
 import com.microsoft.playwright.Locator;
+import com.microsoft.playwright.Page;
+import com.microsoft.playwright.options.WaitForSelectorState;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import testcase.MasterTest;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class DateTimeTest extends MasterTest{
+public class DateTimeTest extends MasterTest {
     String inputGeneric = "//div[@role = 'separator' and normalize-space(.//text()) = '%s']//following::input[1]";
     String expectGeneric = "//div[@role = 'separator' and normalize-space(.//text()) = '%s']//following::div[contains(., '%s') and ./span[contains(concat(' ',normalize-space(@class),' '),' text-rose-500 ')]]";
     String closeforInput = "//div[@role = 'separator' and normalize-space(.//text()) = '%s']//following::span[contains(concat(' ',normalize-space(@class),' '),' ant-picker-clear ')][1]";
@@ -28,18 +33,23 @@ public class DateTimeTest extends MasterTest{
 
         //khai báo
         String inputTimePickerLabel = "Time Picker";
-        String expectTextTimePicker = "Current time:";
 
         Locator inputTimePickerLocator = page.locator(String.format(inputGeneric, inputTimePickerLabel));
-        Locator expcectTimePickerLocator = page.locator(String.format(expectGeneric, inputTimePickerLabel, expectTextTimePicker));
+        Locator expcectTimePickerLocator = page.locator(String.format(expectGeneric, inputTimePickerLabel));
         Locator closeTimeButtonLocator = page.locator(String.format(closeforInput, inputTimePickerLabel));
 
+//        Action
+        //time local format
+        LocalTime currentTime = LocalTime.now();
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+        String localtime = timeFormatter.format(currentTime);
+
         //Fill time
-        inputTimePickerLocator.fill("12:00:00");
+        inputTimePickerLocator.fill(localtime);
         page.keyboard().press("Tab");
 
         //Expect
-        assertThat(expcectTimePickerLocator).hasText("Current time: 12:00:00");
+        assertThat(expcectTimePickerLocator).hasText("Current time: " + localtime);
 
         //Click button close
         inputTimePickerLocator.hover();
@@ -61,10 +71,10 @@ public class DateTimeTest extends MasterTest{
 //        //time
 //        LocalTime currentTime = LocalTime.now();
 //        //Định dạng time
-        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+//        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 //        String localtime = timeFormatter.format(currentTime);
 
-        //Act
+        //Action
         long startNow = System.currentTimeMillis();
         inputTimePickerLocator.click();
         buttonNowLocator.click();
@@ -79,20 +89,18 @@ public class DateTimeTest extends MasterTest{
 
         System.out.println("Start: " + timeBeforeClickNow);
         System.out.println("End: " + timeAfterClickNow);
-        System.out.println("time actualy: " + actualyTime); //time trên web
+        System.out.println("time actually: " + actualyTime); //time trên web
 
 
         //convert form time action to local time
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
         LocalTime timeBeforeClickNowConvert = LocalTime.parse(timeBeforeClickNow, timeFormatter);
         LocalTime timeAfterClickNowConvert = LocalTime.parse(timeAfterClickNow, timeFormatter);
         LocalTime actualyTimeConvert = LocalTime.parse(actualyTime, timeFormatter);
 
+        assertThat(expectinputTimePickerLocator).hasText("Current time: " + actualyTime);
+        assertTrue(actualyTimeConvert.isAfter(timeBeforeClickNowConvert) && actualyTimeConvert.isBefore(timeAfterClickNowConvert));
 
-        if(actualyTimeConvert.isAfter(timeBeforeClickNowConvert)){
-            if(actualyTimeConvert.isBefore(timeAfterClickNowConvert) || actualyTimeConvert.equals(timeAfterClickNowConvert)){
-                assertThat(expectinputTimePickerLocator).hasText("Current time: " + actualyTime);
-            }
-        }
     }
 
     @Test
@@ -114,7 +122,7 @@ public class DateTimeTest extends MasterTest{
         page.keyboard().press("Tab");
 
         //Expect
-        assertThat(expectInputTimeRangeLocator).hasText("Current time range: " + startTimeRange + " - " + endTimeRange);
+        assertThat(expectInputTimeRangeLocator).hasText(expectTextTimeRange +" "+ startTimeRange + " - " + endTimeRange);
 
     }
 
@@ -137,7 +145,7 @@ public class DateTimeTest extends MasterTest{
             //Locator
         Locator commonInputDatePickerLocator = page.locator(commonInputDatePickerXpath);
         Locator expectInputDatePickerLocator = page.locator(String.format(expectGeneric, inputDatePickerLabel, expectTextDatePicker));
-        Locator closeInputButtonDatePickerLocator = page.locator(String.format(closeforInput, inputDatePickerLabel));
+//        Locator closeInputButtonDatePickerLocator = page.locator(String.format(closeforInput, inputDatePickerLabel));
         Locator todayButtonLocator = page.locator(todayButtonXpath);
         Locator currentWeekLocator = page.locator(selectWeekXpath);
         Locator currentMonthLocator = page.locator(selectMonthXpath);
@@ -146,7 +154,9 @@ public class DateTimeTest extends MasterTest{
 
         //Action
         commonInputDatePickerLocator.click();
+
         if (todayButtonLocator.isVisible()){
+            page.waitForSelector(todayButtonXpath,new Page.WaitForSelectorOptions().setState(WaitForSelectorState.VISIBLE));
             todayButtonLocator.click();
         }
         if (currentWeekLocator.isVisible()){
@@ -166,8 +176,40 @@ public class DateTimeTest extends MasterTest{
         //Expect
             //chú ý KHOẢNG CÁCH
         assertThat(expectInputDatePickerLocator).hasText(expectTextDatePicker +" "+ commonInputDatePickerLocator.getAttribute("value"));
-        closeInputButtonDatePickerLocator.hover();
-        closeInputButtonDatePickerLocator.click();
+//        closeInputButtonDatePickerLocator.hover();
+//        closeInputButtonDatePickerLocator.click();
+
+    }
+
+    @Test
+    void verifyMultiDatePicker(){
+        navigateDateTimePage();
+        List<String> dateValues = new ArrayList<>();
+        String multipleDateLabel = "Multiple Date Picker";
+        String expectMultipleDate = "Current date: ";
+        int day = 15;
+        String inputMultiple = "//div[@role = 'separator' and normalize-space(.//text()) = 'Multiple Date Picker']//following::div[normalize-space() = 'Select date' and contains(@class, 'picker-multiple')]";
+        String selectDayXpath = "//div[contains(@class, 'picker-panel')]//following::td[normalize-space() = '%s']";
+        String dateSelectedXpath = "//span[contains(@class, 'selection-item-content')][1]";
+
+        Locator multipleDateLocator = page.locator(inputMultiple);
+        Locator expectMultipleDateLocator = page.locator(String.format(expectGeneric, multipleDateLabel, expectMultipleDate));
+        Locator dateSelectedLocator = page.locator(dateSelectedXpath);
+
+        multipleDateLocator.click();
+        for (int i = 0; i < 3; i++){
+            Locator selectDayLocator = page.locator(String.format(selectDayXpath, day));
+            selectDayLocator.hover();
+            selectDayLocator.click();
+            day += 1;
+
+
+//            dateValues.add(multipleDateLocator.getAttribute("value"));
+//            System.out.println(dateValues);
+        }
+//        multipleDateLocator.click();
+//        System.out.println(multipleDateLocator.getAttribute("value"));
+//        assertThat(expectMultipleDateLocator).hasText(expectMultipleDate + );
 
     }
 }

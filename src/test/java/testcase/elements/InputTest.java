@@ -4,11 +4,12 @@ import com.microsoft.playwright.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import testcase.MasterTest;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 
 
-public class InputTest extends MasterTest{
+public class InputTest extends MasterTest {
     String inputText = "Hello World";
     String inputXpathOrigin = "//div[@role = 'separator' and normalize-space(.//text()) = '%s']//following::input[1]";
     String inputExpectXpathOrigin = "//div[@role = 'separator'  and normalize-space(.//text()) = '%s']" +
@@ -75,13 +76,14 @@ public class InputTest extends MasterTest{
         Locator increaseValueLocator = page.locator(increseValueXpath);
         Locator decreaseValueLocator = page.locator(decreaseValueXpath);
 
-        //Step
+        //Action
         navigatePage();
         for (int i=0; i < 5; i++){
             inputNumberLocator.click();
             increaseValueLocator.hover();
             increaseValueLocator.click();
             currentValue += 5;
+            assertThat(expectInputNumberLocator).hasText("Value: " + currentValue);
         }
         if (currentValue > 3){
             for (int i=0; i < 5; i++){
@@ -89,6 +91,7 @@ public class InputTest extends MasterTest{
                 decreaseValueLocator.hover();
                 decreaseValueLocator.click();
                 currentValue -= 5;
+                assertThat(expectInputNumberLocator).hasText("Value: " + currentValue);
             }
         }
 
@@ -96,5 +99,18 @@ public class InputTest extends MasterTest{
         assertThat(expectInputNumberLocator).hasText("Value: " + currentValue);
     }
 
+    @Test
+    void otpInput(){
+        navigatePage();
+        String otpInputLabel = "OTP Box";
+        String fillValue = "543678";
+        String inputOtpXpath = "//div[normalize-space() = 'OTP Box' and @role = 'separator']//following::input[position() <= 6]";
+        Locator inputOtpLocator = page.locator(inputOtpXpath);
+        Locator expectInputOtpLocator = page.locator(String.format(inputExpectXpathOrigin, otpInputLabel));
 
+        for (int i = 0; i < fillValue.length(); i++){
+            inputOtpLocator.nth(i).fill(String.valueOf(fillValue.charAt(i)));
+        }
+        assertThat(expectInputOtpLocator).hasText("Value: " + fillValue);
+    }
 }

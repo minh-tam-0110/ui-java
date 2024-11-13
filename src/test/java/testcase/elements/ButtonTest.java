@@ -1,16 +1,16 @@
 package testcase.elements;
 
 import com.microsoft.playwright.*;
-import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import testcase.MasterTest;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
-public class ButtonTest extends MasterTest{
+public class ButtonTest extends MasterTest {
 
     void clickButton(String buttonLabel) {
         String normalButton = String.format("//button[normalize-space() ='%s']", buttonLabel);

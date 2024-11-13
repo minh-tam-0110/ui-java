@@ -3,6 +3,7 @@ package testcase.elements;
 import com.microsoft.playwright.Locator;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import testcase.MasterTest;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 

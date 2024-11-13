@@ -2,14 +2,13 @@ package testcase.elements;
 
 import com.microsoft.playwright.*;
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import testcase.MasterTest;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 
 
 
-public class CheckboxTest extends MasterTest{
+public class CheckboxTest extends MasterTest {
 
     void selectCheckboxByLable(String checkboxLabel, boolean checked) {
         String normalCheckbox = "//label[normalize-space(.//text()) = '%s'] //input";

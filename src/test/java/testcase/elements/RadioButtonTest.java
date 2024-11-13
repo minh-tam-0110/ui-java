@@ -3,6 +3,7 @@ package testcase.elements;
 import com.microsoft.playwright.Locator;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import testcase.MasterTest;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 
@@ -29,10 +30,8 @@ public class RadioButtonTest extends MasterTest {
     void defaultRadioButton(String defaultRadiobuttonLabel){
         navigatePageRadio();
         String indexdefaultRadioButton = "1";
-
         actionRadioButton(indexdefaultRadioButton,defaultRadiobuttonLabel);
         resultRadioButton(indexdefaultRadioButton,defaultRadiobuttonLabel);
-
     }
 
     @ParameterizedTest
@@ -40,11 +39,8 @@ public class RadioButtonTest extends MasterTest {
     void customRadioButton(String defaultRadiobuttonLabel){
         navigatePageRadio();
         //khai báo
-        String index = "2";
-
-        actionRadioButton(index,defaultRadiobuttonLabel);
-        resultRadioButton(index,defaultRadiobuttonLabel);
-
+        actionRadioButton("2",defaultRadiobuttonLabel);
+        resultRadioButton("2",defaultRadiobuttonLabel);
     }
 
 }

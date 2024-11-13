@@ -1,4 +1,4 @@
-package testcase.elements;
+package testcase;
 
 import com.microsoft.playwright.*;
 import org.junit.jupiter.api.AfterAll;
@@ -8,33 +8,33 @@ import org.junit.jupiter.api.BeforeEach;
 
 public class MasterTest {
     // Shared between all tests in this class.
-    static Playwright playwright;
-    static Browser browser;
+    public static Playwright playwright;
+    public static Browser browser;
 
     // New instance for each test method.
-    BrowserContext context;
-    Page page;
+    public BrowserContext context;
+    public Page page;
 
     @BeforeAll
-    static void launchBrowser() {
+    public static void launchBrowser() {
         playwright = Playwright.create();
         browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(false));
 
     }
 
     @AfterAll
-    static void closeBrowser() {
+    public static void closeBrowser() {
         playwright.close();
     }
 
     @BeforeEach
-    void createContextAndPage() {
+    public void createContextAndPage() {
         context = browser.newContext();
         page = context.newPage();
     }
 
     @AfterEach
-    void closeContext() {
+    public void closeContext() {
         context.close();
     }
 }
