@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import testcase.MasterTest;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +21,7 @@ public class tableTest extends MasterTest {
     String [] definedHeaders = {"Name", "Age", "Address", "Tags"};
 
     @Test
-    void verifyTable() throws InterruptedException, JsonProcessingException {
+    void verifyTable() throws InterruptedException, JsonProcessingException, NoSuchFieldException, IllegalAccessException {
         page.navigate("https://test-with-me-app.vercel.app/learning/web-elements/components/table");
         String tableXpath = "(//div[normalize-space() = 'Table']//following::table)[1]";
         Thread.sleep(3000);
@@ -40,25 +41,19 @@ public class tableTest extends MasterTest {
             List<Locator> rowLocators = page.locator(rowDataXpath).all();
             for (Locator row : rowLocators) {
                 Customer customer = new Customer();
-                int indexOfName = headerList.indexOf("Name");
-                String cellNameLocator = String.format("//td[%s]", indexOfName + 1);
-                String name = row.locator(cellNameLocator).textContent();
-                customer.setName(name);
 
-                int indexOfAge = headerList.indexOf("Age");
-                String cellAgeLocator = String.format("//td[%s]", indexOfAge + 1);
-                String age = row.locator(cellAgeLocator).textContent();
-                customer.setAge(Integer.parseInt(age));
-
-                int indexOfAdress = headerList.indexOf("Address");
-                String cellAdressLocator = String.format("//td[%s]", indexOfAdress + 1);
-                String adress = row.locator(cellAdressLocator).textContent();
-                customer.setAddress(adress);
-
-                int indexOfTags = headerList.indexOf("Tags");
-                String cellTagsLocator = String.format("//td[%s]", indexOfTags + 1);
-                String tags = row.locator(cellTagsLocator).textContent();
-                customer.setTags(tags);
+                for (String header : definedHeaders) {
+                    Field field = Customer.class.getDeclaredField(header.toLowerCase());
+                    field.setAccessible(true); // set quyền truy cập
+                    int index = headerList.indexOf(header);
+                    String cellLocator = String.format("//td[%s]", index + 1);
+                    String value = row.locator(cellLocator).textContent();
+                    if ("Age".equals(header)){
+                        field.set(customer, Integer.parseInt(value));
+                    } else {
+                        field.set(customer, value);
+                    }
+                }
 
                 actualCustomer.add(customer);
             }
