@@ -18,7 +18,7 @@ public class ModelTest extends MasterTest {
         page.navigate("https://test-with-me-app.vercel.app/learning/web-elements/components/modal");
         String showButtonXpath = "//div[normalize-space() = 'Modal / Popup']//following::button[normalize-space() = 'Show Confirm']";
         page.locator(showButtonXpath).click();
-        String inputModel = String.format("//button[@type = 'button' and normalize-space() = 'Yes']",input);
+        String inputModel = String.format("//button[@type = 'button' and normalize-space() = '%s']",input);
         page.locator(inputModel).click();
         String expectedLabelXpath = "//div[contains(., 'Status: ') and ./span[contains(concat(' ',normalize-space(@class),' '),' text-rose-500 ')]]";
         assertThat(page.locator(expectedLabelXpath)).hasText(String.format("Status: %s",expected));
