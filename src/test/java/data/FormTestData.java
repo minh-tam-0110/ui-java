@@ -1,5 +1,8 @@
 package data;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 public class FormTestData {
     public static String formValidationData = """
             [
@@ -73,4 +76,29 @@ public class FormTestData {
               }
             ]
             """;
+    public static String formValidationDataSuccess = String.format("""
+            [
+                {
+                    "Full Name": "Minh Tâm",
+                    "Email": "abc@gmail.com",
+                    "Phone Number": "0123465789",
+                    "Date of Birth": "2000-12-03",
+                    "Address": "aaaa"
+                },               
+                {
+                    "Full Name": "Minh Tâm",
+                    "Email": "abc@gmail.com",
+                    "Phone Number": "0123465789",
+                    "Date of Birth": "%s",
+                    "Address": "aaaa"
+                }
+              
+            ]
+            """, getValueBoudaryBirth());
+    private static String getValueBoudaryBirth(){
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate today = LocalDate.now();
+        String validBoudaryBirth = dateTimeFormatter.format(today.minusYears(18));
+        return validBoudaryBirth;
+    }
 }
